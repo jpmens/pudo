@@ -14,19 +14,19 @@ If the read file contains an `_id` field it is used as the document's key, other
 
 Consider the directory `movies` with the following files in it:
 
-drwxr-xr-x    238 Apr 28 16:02 movies
--rw-r--r--     88 Apr 28 12:33 movies/airforce1.json
-drwxr-xr-x    102 Apr 28 16:03 movies/cpd.attachments
--rw-r--r--  43128 Nov 16 05:42 movies/cpd.attachments/n41380.jpg
--rw-r--r--    231 Apr 28 16:02 movies/cpd.yaml
-drwxr-xr-x    136 Apr 28 12:30 movies/k-19.attachments
--rw-r--r--  40882 Apr 28 12:29 movies/k-19.attachments/cover.jpg
--rw-r--r--   1192 Apr 28 12:30 movies/k-19.attachments/review.txt
--rw-r--r--     93 Apr 28 12:25 movies/k-19.json
+	drwxr-xr-x    238 Apr 28 16:02 movies
+	-rw-r--r--     88 Apr 28 12:33 movies/airforce1.json
+	drwxr-xr-x    102 Apr 28 16:03 movies/cpd.attachments
+	-rw-r--r--  43128 Nov 16 05:42 movies/cpd.attachments/n41380.jpg
+	-rw-r--r--    231 Apr 28 16:02 movies/cpd.yaml
+	drwxr-xr-x    136 Apr 28 12:30 movies/k-19.attachments
+	-rw-r--r--  40882 Apr 28 12:29 movies/k-19.attachments/cover.jpg
+	-rw-r--r--   1192 Apr 28 12:30 movies/k-19.attachments/review.txt
+	-rw-r--r--     93 Apr 28 12:25 movies/k-19.json
 
 Now I run `pudo`:
 
-	$ pudo movies http://192.168.1.30:5984/database
+	$ pudo movies http://127.0.0.1:5984/database
 	movies/airforce1.json
 	movies/cpd.yaml
 		n41380.jpg (image/jpeg)
@@ -34,9 +34,9 @@ Now I run `pudo`:
 		cover.jpg (image/jpeg)
 		review.txt (text/plain)
 
-creating three documents; the `k-19`  has two files attached to it:
+creating three documents; the `k-19` document has two files attached to it:
 
-	$ curl -s http://192.168.1.30:5984/database/k-19
+	$ curl -s http://127.0.0.1:5984/database/k-19
 	{
 	   "_id" : "k-19",
 	   "title" : "K-19: The Widowmaker",
@@ -106,7 +106,7 @@ translates to JSON as
 
 ## Credits
 
-I (Jan-Piet Mens) wrote this. I was creatly inspired by _couchapp_, and I might have stolen a bit of code and ideas from _couchdb-push_ (thanks). 
+I (Jan-Piet Mens) wrote this. I was greatly inspired by _couchapp_, and I might have stolen a bit of code and ideas from _couchdb-push_ (thanks). (The movie information stems from [IMDB](http://www.imdb.com/) and any copy/paste errors are mine.)
 
 ## Bugs
 
