@@ -1,0 +1,93 @@
+#!/usr/bin/perl
+# pudo.pl (C)2010 by Jan-Piet Mens
+# 
+
+use strict;
+use AnyEvent::CouchDB;
+use File::Glob ':glob';
+use File::Basename;
+use IO::All;
+use JSON;
+use URI::Escape;
+use File::MimeInfo::Magic;
+
+use Data::Dump 'pp';
+use Data::Dumper;
+
+die "Usage: $0 directory URI\n" unless ($#ARGV == 1);
+
+my $dir = $ARGV[0];
+my $uri = $ARGV[1];
+
+my $json = JSON->new;
+
+my $db = couchdb($uri);
+
+
+opendir(DIR, $dir) || die "Can't read directory $dir: $!";
+my @files = grep { /\.json/i && -f "$dir/$_" } readdir(DIR);
+closedir DIR;
+
+my $doc;
+my $dbdoc;
+
+foreach my $f (@files) {
+	my $shortname = fileparse($f, qr/\.[^.]*/);
+	my $path = $dir.'/'.$f;
+	my $file;
+	my $id;
+
+	print "Do: $path\n";
+
+	eval {
+		$file = io($path);
+		$doc  = $json->decode(scalar $file->all);
+	};
+	if ($@) {
+		die "$_ : $@";
+	}
+
+	$id = (defined($doc->{_id})) ? $doc->{_id} : uri_unescape($shortname);
+	eval {
+		$dbdoc = $db->open_doc($id)->recv;
+		$doc->{_id} = $dbdoc->{_id};
+		$doc->{_rev} = $dbdoc->{_rev};
+	};
+	if ($@) {
+		$doc->{_id} = $id;
+	}
+
+
+	print pp ($doc), "\n";
+
+	eval {
+		$db->save_doc($doc)->recv;
+	};
+	if ($@) {
+		die "Can't save document $id: " . $@ . "\n";
+	}
+
+	if (-d "${path}.attach") {
+		my @attachments = bsd_glob("${path}.attach/*");
+
+		foreach my $at (@attachments) {
+			# my $mimetype = $ft->mime_type($at);
+			# my $mimetype = $ft->checktype_contents($at);
+			my $mimetype = mimetype($at);
+			my $filename = basename($at);
+			print " .. $at: $mimetype\n";
+			eval {
+				$db->attach($doc,
+					$filename, {
+						src => "$at",
+						type => $mimetype
+					})->recv
+			};
+			if ($@) {
+				warn "Can't attach $at to document $id: " . $@ . "\n";
+			}
+		}
+	}
+
+}
+exit;
