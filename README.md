@@ -60,9 +60,9 @@ creating two documents; the second has two files attached to it:
 * [AnyEvent::CouchDB](http://search.cpan.org/dist/AnyEvent-CouchDB/)
 * [couchdb-push](http://search.cpan.org/dist/AnyEvent-CouchDB/bin/couchdb-push)
 
-## Author
+## Credits
 
-Jan-Piet Mens
+I (Jan-Piet Mens) wrote this. I was creatly inspired by _couchapp_, and I might have stolen a bit of code and ideas from _couchdb-push_ (thanks). 
 
 ## Bugs
 
