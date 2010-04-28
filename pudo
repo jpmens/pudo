@@ -70,8 +70,8 @@ foreach my $f (@files) {
 		die "Can't save document $id: " . $@ . "\n";
 	}
 
-	if (-d "${path}.attach") {
-		my @attachments = bsd_glob("${path}.attach/*");
+	if (-d "${dir}/${shortname}.attachments") {
+		my @attachments = bsd_glob("${dir}/${shortname}.attachments/*");
 
 		foreach my $at (@attachments) {
 			my $mimetype = mimetype($at);
