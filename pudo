@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 # pudo.pl (C)2010 by Jan-Piet Mens
-# Reads the specified directory for JSON files (*.json) and create
+# Reads the specified directory for JSON/YAML files (*.json/*.yaml) and creates
 # corresponding documents in the CouchDB database at the specified URI.
-# If the read JSON file contains an _id field it is used as the
+# If the read file contains an _id field it is used as the
 # document's key, otherwise the base filename is used.
 
 use strict;
@@ -11,8 +11,11 @@ use File::Glob ':glob';
 use File::Basename;
 use IO::All;
 use JSON;
+use YAML;
 use URI::Escape;
 use File::MimeInfo::Magic;
+
+local $YAML::UseFold = 1;
 
 use Data::Dump 'pp';
 use Data::Dumper;
@@ -28,14 +31,14 @@ my $db = couchdb($uri);
 
 
 opendir(DIR, $dir) || die "Can't read directory $dir: $!";
-my @files = grep { /\.json/i && -f "$dir/$_" } readdir(DIR);
+my @files = grep { /\.(json|yaml)/i && -f "$dir/$_" } readdir(DIR);
 closedir DIR;
 
 my $doc;
 my $dbdoc;
 
 foreach my $f (@files) {
-	my $shortname = fileparse($f, qr/\.[^.]*/);
+	my ($shortname, $dirpath, $suffix) = fileparse($f, qr/\.[^.]*/);
 	my $path = $dir.'/'.$f;
 	my $file;
 	my $id;
@@ -44,7 +47,15 @@ foreach my $f (@files) {
 
 	eval {
 		$file = io($path);
-		$doc  = $json->decode($file->all);
+
+		if (lc $suffix eq '.json') {
+			$doc  = $json->decode($file->all);
+		} elsif (lc $suffix eq '.yaml') {
+			my ($h, $arrayref, $string) = Load($file->all);
+			$doc = $json->decode($json->encode($h)); # hmm...
+		} else {
+			die "I don't grok $suffix suffixes.\n";
+		}
 	};
 	if ($@) {
 		die "$_ : $@";
