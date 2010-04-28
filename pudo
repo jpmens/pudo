@@ -19,7 +19,7 @@ die "Usage: $0 directory URI\n" unless ($#ARGV == 1);
 my $dir = $ARGV[0];
 my $uri = $ARGV[1];
 
-my $json = JSON->new;
+my $json = JSON->new->utf8;
 
 my $db = couchdb($uri);
 
@@ -37,11 +37,12 @@ foreach my $f (@files) {
 	my $file;
 	my $id;
 
-	print "Do: $path\n";
+	print "$path\n";
 
 	eval {
 		$file = io($path);
-		$doc  = $json->decode(scalar $file->all);
+		# $doc  = $json->decode(scalar $file->all);
+		$doc  = $json->decode($file->all);
 	};
 	if ($@) {
 		die "$_ : $@";
@@ -58,7 +59,7 @@ foreach my $f (@files) {
 	}
 
 
-	print pp ($doc), "\n";
+	# print pp ($doc), "\n";
 
 	eval {
 		$db->save_doc($doc)->recv;
@@ -71,11 +72,9 @@ foreach my $f (@files) {
 		my @attachments = bsd_glob("${path}.attach/*");
 
 		foreach my $at (@attachments) {
-			# my $mimetype = $ft->mime_type($at);
-			# my $mimetype = $ft->checktype_contents($at);
 			my $mimetype = mimetype($at);
 			my $filename = basename($at);
-			print " .. $at: $mimetype\n";
+			print "\t$filename ($mimetype)\n";
 			eval {
 				$db->attach($doc,
 					$filename, {
