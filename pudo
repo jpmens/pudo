@@ -41,7 +41,6 @@ foreach my $f (@files) {
 
 	eval {
 		$file = io($path);
-		# $doc  = $json->decode(scalar $file->all);
 		$doc  = $json->decode($file->all);
 	};
 	if ($@) {

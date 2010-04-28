@@ -23,13 +23,36 @@ Consider the directory `movies` with the following files in it:
 
 Now I run `pudo`:
 
-	$ pudo movies http://192.168.1.30:5984/pudo
+	$ pudo movies http://192.168.1.30:5984/database
 	movies/airforce1.json
 	movies/k-19.json
 	        cover.jpg (image/jpeg)
 		review.txt (text/plain)
 
-creating two documents; the second has two files attached to it.
+creating two documents; the second has two files attached to it:
+
+	$ curl -s http://192.168.1.30:5984/database/k-19
+	{
+	   "_id" : "k-19",
+	   "title" : "K-19: The Widowmaker",
+	   "_attachments" : {
+	      "cover.jpg" : {
+		 "revpos" : 38,
+		 "length" : 40882,
+		 "content_type" : "image/jpeg",
+		 "stub" : true
+	      },
+	      "review.txt" : {
+		 "revpos" : 39,
+		 "length" : 1192,
+		 "content_type" : "text/plain",
+		 "stub" : true
+	      }
+	   },
+	   "_rev" : "39-728042cfe9666e945e3720f625d5b5ed",
+	   "director" : "Kathryn Bigelow",
+	   "year" : 2002
+	}
 
 ## See Also
 
