@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 # pudo.pl (C)2010 by Jan-Piet Mens
-# 
+# Reads the specified directory for JSON files (*.json) and create
+# corresponding documents in the CouchDB database at the specified URI.
+# If the read JSON file contains an _id field it is used as the
+# document's key, otherwise the base filename is used.
 
 use strict;
 use AnyEvent::CouchDB;

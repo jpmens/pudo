@@ -8,7 +8,7 @@
 
 `pudo` reads the specified _directory_ for JSON files (`*.json`) and creates corresponding documents in the [CouchDB][] database at the specified URI.
 
-If the read JSON file contains an `_id` field it is used as the document's key, otherwise the base filename is used.
+If the read JSON file contains an `_id` field it is used as the document's key, otherwise the base filename (sans `.json`) is used.
 
 ## Example
 
